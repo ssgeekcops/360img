@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>360° Multiplayer Prototype</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #0b1020;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      #overlay {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 12px 16px;
+        border-radius: 8px;
+        z-index: 2;
+        max-width: 320px;
+      }
+
+      #status {
+        font-size: 12px;
+        margin-top: 8px;
+        opacity: 0.8;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="overlay">
+      <div><strong>360° Multiplayer World</strong></div>
+      <div>WASD/Arrow keys to move • Click to lock mouse</div>
+      <div>Touch: left drag to move, right drag to look</div>
+      <div id="status">Connecting...</div>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
