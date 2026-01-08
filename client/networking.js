@@ -17,10 +17,7 @@ export default class NetworkClient {
   }
 
   connect() {
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const overrideUrl = window.__WS_URL__ || new URLSearchParams(window.location.search).get('ws');
-    const wsUrl = overrideUrl || `${protocol}://${window.location.host}/ws`;
-    this.socket = new WebSocket(wsUrl);
+    this.socket = new WebSocket(`ws://${window.location.host}/ws`);
 
     this.socket.addEventListener('open', () => {
       this.onStatus?.('Connected');
@@ -47,10 +44,6 @@ export default class NetworkClient {
     this.socket.addEventListener('close', () => {
       this.onStatus?.('Disconnected');
       this.stopPing();
-    });
-
-    this.socket.addEventListener('error', () => {
-      this.onStatus?.('Connection error');
     });
   }
 

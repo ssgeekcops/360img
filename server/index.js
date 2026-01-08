@@ -40,11 +40,6 @@ async function serveStatic(req, res) {
 }
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/health') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('ok');
-    return;
-  }
   if (req.url === '/ws') {
     res.writeHead(426);
     res.end('Upgrade Required');
@@ -76,8 +71,11 @@ transport.on('message', ({ clientId, message }) => {
   }
 });
 
+
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+
+server.listen(PORT, '0.0.0.0', () => {
   roomManager.start();
-  console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
+
