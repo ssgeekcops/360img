@@ -1,74 +1,33 @@
-const MessageType = Object.freeze({
+export const MessageType = Object.freeze({
   JOIN: 'join',
-  LEAVE: 'leave',
+  WELCOME: 'welcome',
   INPUT: 'input',
   SNAPSHOT: 'snapshot',
+  LEAVE: 'leave',
+  PING: 'ping',
+  PONG: 'pong',
 });
 
-const MessageSchemas = Object.freeze({
-  [MessageType.JOIN]: {
-    type: MessageType.JOIN,
-    payload: {
-      clientId: 'string',
-    },
-  },
-  [MessageType.LEAVE]: {
-    type: MessageType.LEAVE,
-    payload: {
-      clientId: 'string',
-    },
-  },
-  [MessageType.INPUT]: {
-    type: MessageType.INPUT,
-    payload: {
-      clientId: 'string',
-      entityId: 'number',
-      sequence: 'number',
-      input: 'object',
-    },
-  },
-  [MessageType.SNAPSHOT]: {
-    type: MessageType.SNAPSHOT,
-    payload: {
-      tick: 'number',
-      entities: 'object',
-      lastProcessedInput: 'number',
-    },
-  },
-});
-
-function validateMessage(message) {
-  if (!message || typeof message !== 'object') {
-    return { valid: false, error: 'Message must be an object.' };
-  }
-
-  const schema = MessageSchemas[message.type];
-  if (!schema) {
-    return { valid: false, error: `Unknown message type: ${message.type}` };
-  }
-
-  const payload = message.payload || {};
-  const schemaPayload = schema.payload || {};
-
-  for (const [key, expectedType] of Object.entries(schemaPayload)) {
-    if (typeof payload[key] !== expectedType) {
-      return {
-        valid: false,
-        error: `Invalid payload.${key}; expected ${expectedType}.`,
-      };
-    }
-  }
-
-  return { valid: true };
-}
-
-function createMessage(type, payload) {
+export function createMessage(type, payload) {
   return { type, payload };
 }
 
-module.exports = {
-  MessageType,
-  MessageSchemas,
-  validateMessage,
-  createMessage,
-};
+export function encodeMessage(message) {
+  return JSON.stringify(message);
+}
+
+export function decodeMessage(raw) {
+  try {
+    const text = typeof raw === 'string' ? raw : raw?.toString?.();
+    if (!text) {
+      return null;
+    }
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed.type !== 'string') {
+      return null;
+    }
+    return parsed;
+  } catch (error) {
+    return null;
+  }
+}
