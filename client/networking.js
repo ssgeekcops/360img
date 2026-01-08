@@ -25,6 +25,7 @@ export default class NetworkClient {
     const overrideUrl = window.__WS_URL__ || new URLSearchParams(window.location.search).get('ws');
     const wsUrl = overrideUrl || `${protocol}://${window.location.host}/ws`;
     this.socket = new WebSocket(wsUrl);
+    this.socket = new WebSocket(`ws://${window.location.host}/ws`);
 
     this.socket.addEventListener('open', () => {
       this.onStatus?.('Connected');
