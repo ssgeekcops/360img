@@ -76,12 +76,16 @@ transport.on('message', ({ clientId, message }) => {
   }
 });
 
-var SERVER_PORT = globalThis.__SERVER_PORT__ || Number(process.env.PORT) || 3000;
-globalThis.__SERVER_PORT__ = SERVER_PORT;
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  roomManager.start();
+  console.log(`Server listening on http://localhost:${PORT}`);
+});
 
-if (!server.listening) {
-  server.listen(SERVER_PORT, () => {
-    roomManager.start();
-    console.log(`Server listening on http://localhost:${SERVER_PORT}`);
-  });
-}
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, '0.0.0.0', () => {
+  roomManager.start();
+  console.log(`Server listening on port ${PORT}`);
+});
+
