@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import { WebSocketServer } from 'ws';
+import { decodeMessage, encodeMessage, MessageType } from '../shared/index.js';
+
 import { decodeMessage, encodeMessage, MessageType } from '../shared/index.js';
 
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
@@ -88,6 +91,17 @@ export default class MultiplayerWebSocketServer {
     this.clients = new Map();
     this.handlers = {};
 
+    this.wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+    this.wss.on('connection', (socket) => {
+      const clientId = crypto.randomUUID();
+      this.clients.set(clientId, socket);
+
+      socket.on('message', (data) => {
+        const message = decodeMessage(data);
+        if (!message) {
+          return;
+        }
+        this.handleMessage(clientId, message);
     httpServer.on('upgrade', (req, socket) => {
       if (req.url !== '/ws') {
         socket.destroy();
@@ -171,6 +185,11 @@ export default class MultiplayerWebSocketServer {
   }
 
   broadcast(message) {
+    const encoded = encodeMessage(message);
+    for (const socket of this.clients.values()) {
+      if (socket.readyState === socket.OPEN) {
+        socket.send(encoded);
+      }
     const encoded = encodeFrame(encodeMessage(message));
     for (const client of this.clients.values()) {
       client.socket.write(encoded);
@@ -178,6 +197,11 @@ export default class MultiplayerWebSocketServer {
   }
 
   sendTo(clientId, message) {
+    const socket = this.clients.get(clientId);
+    if (!socket || socket.readyState !== socket.OPEN) {
+      return;
+    }
+    socket.send(encodeMessage(message));
     const client = this.clients.get(clientId);
     if (!client) {
       return;

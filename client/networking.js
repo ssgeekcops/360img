@@ -17,6 +17,14 @@ export default class NetworkClient {
   }
 
   connect() {
+    const isSecure =
+      window.location.protocol === 'https:' ||
+      window.isSecureContext ||
+      window.location.hostname.endsWith('.railway.app');
+    const protocol = isSecure ? 'wss' : 'ws';
+    const overrideUrl = window.__WS_URL__ || new URLSearchParams(window.location.search).get('ws');
+    const wsUrl = overrideUrl || `${protocol}://${window.location.host}/ws`;
+    this.socket = new WebSocket(wsUrl);
     this.socket = new WebSocket(`ws://${window.location.host}/ws`);
 
     this.socket.addEventListener('open', () => {
@@ -44,6 +52,10 @@ export default class NetworkClient {
     this.socket.addEventListener('close', () => {
       this.onStatus?.('Disconnected');
       this.stopPing();
+    });
+
+    this.socket.addEventListener('error', () => {
+      this.onStatus?.('Connection error');
     });
   }
 

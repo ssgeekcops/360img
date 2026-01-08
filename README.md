@@ -24,6 +24,19 @@ http://localhost:3000
 
 Open multiple tabs/windows to see other players.
 
+## Deploy on Railway
+
+1. Create a new Railway project from this repo.
+2. Ensure the start command is `npm start`.
+3. Deploy the service; Railway will expose the HTTP + WebSocket server on one URL.
+4. Visit the generated URL to load both the client and server.
+
+If you deploy the client separately, you can override the WebSocket URL using a query string:
+
+```
+https://your-client-url/?ws=wss://your-railway-url/ws
+```
+
 ## Architecture overview
 
 ### Client (`/client`)
